@@ -1,0 +1,19 @@
+{
+  "name": "pericope",
+  "author": "Bob Lail <bob.lailfamily@gmail.com>",
+  "version": "0.6.1",
+  "main":                 "lib/pericope",
+  "dependencies": {},
+  "devDependencies": {
+    "coffee-script":      "~1.6.3",
+    "mocha":              "~1.18.2",
+    "chai":               "~1.9.0"
+  },
+  "engines": {
+    "node":               ">=0.8.0"
+  },
+  "scripts": {
+    "build":              "coffee --bare --compile --output lib src/*.coffee",
+    "test":               "mocha --reporter spec --compilers coffee:coffee-script"
+  }
+}
