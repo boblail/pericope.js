@@ -10,17 +10,18 @@ describe 'Pericope', ->
 
     describe 'BOOK_PATTERN', ->
       it 'should match valid books', ->
-        tests = [
-          'ii samuel',
-          '1 cor.',
-          'jas',
-          'song of songs',
-          'song of solomon',
-          'first kings',
-          '3rd jn',
-          'phil' ]
-        for test in tests
+        tests =
+          'ii samuel':      'ii samuel'
+          '1 cor.':         '1 cor'
+          'jas':            'jas'
+          'song of songs':  'song of songs'
+          'song of solomon':'song of solomon'
+          'first kings':    'first kings'
+          '3rd jn':         '3rd jn'
+          'phil':           'phil'
+        for test, expectedMatch of tests
           assert Pericope.BOOK_PATTERN.test(test), "Expected Pericope to recognize \"#{test}\" as a potential book"
+          assert.equal test.match(Pericope.BOOK_PATTERN)[0], expectedMatch
 
 
     describe 'PERICOPE_PATTERN', ->
