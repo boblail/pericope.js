@@ -154,10 +154,10 @@ describe 'Pericope', ->
     describe 'toString()', ->
       it 'should format Bible refeferences correctly', ->
         tests =
-          'James 4:7':   ['jas 4:7', 'james 4:7', 'James 4.7', 'jas 4 :7', 'jas 4: 7']    # test basic formatting
-          '2 Samuel 7':  ['2 sam 7', 'iisam 7', 'second samuel 7', '2sa 7', '2 sam. 7']   # test chapter range formatting
-          'Philemon 8-10': ['philemon 8-10', 'philemon 6:8-10']                           # test book with no chapters
-          'Philippians 1:1-17, 2:3-5, 17':  ['phil 1:1-17,2:3-5,17']                       # test comma-separated ranges
+          'James 4:7':                      ['jas 4:7', 'james 4:7', 'James 4.7', 'jas 4 :7', 'jas 4: 7']    # test basic formatting
+          '2 Samuel 7':                     ['2 sam 7', 'iisam 7', 'second samuel 7', '2sa 7', '2 sam. 7']   # test chapter range formatting
+          'Philemon 8-10':                  ['philemon 8-10', 'philemon 6:8-10']                             # test book with no chapters
+          'Philippians 1:1-17, 2:3-5, 17':  ['phil 1:1-17,2:3-5,17']                                         # test comma-separated ranges
 
           # test the values embedded in the pericope extraction
           'Psalm 37:3-7, 23-24, 39-40':     ['Psalm 37:3–7a, 23–24, 39–40']
