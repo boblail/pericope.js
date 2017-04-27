@@ -152,16 +152,17 @@ describe 'Pericope', ->
 
   describe 'can format Bible references', ->
     describe 'toString()', ->
-      it 'should format Bible refeferences correctly', ->
+      it 'should format Bible references correctly', ->
         tests =
           'James 4:7':                      ['jas 4:7', 'james 4:7', 'James 4.7', 'jas 4 :7', 'jas 4: 7']    # test basic formatting
           '2 Samuel 7':                     ['2 sam 7', 'iisam 7', 'second samuel 7', '2sa 7', '2 sam. 7']   # test chapter range formatting
-          'Philemon 8-10':                  ['philemon 8-10', 'philemon 6:8-10']                             # test book with no chapters
-          'Philippians 1:1-17, 2:3-5, 17':  ['phil 1:1-17,2:3-5,17']                                         # test comma-separated ranges
+          'Philemon 8–10':                  ['philemon 8-10', 'philemon 6:8-10']                             # test book with no chapters
+          'Philippians 1:1–17; 2:3–5, 17':  ['phil 1:1-17,2:3-5,17']                                         # test comma-separated ranges
 
           # test the values embedded in the pericope extraction
-          'Psalm 37:3-7, 23-24, 39-40':     ['Psalm 37:3–7a, 23–24, 39–40']
-          'John 20:19-23':                  ['John 20:19–23']
+          'Psalm 37:3–7, 23–24, 39–40':     ['Psalm 37:3–7a, 23–24, 39–40']
+          'John 20:19–23':                  ['John 20:19–23']
+          'Exodus 2—3':                     ['ex 2-3']
           '2 Peter 3:1':                    ['2 Peter 4.1 ']
           'James 1:13, 20':                 ['(Jas. 1:13, 20) ']
           'John 21:14':                     ['jn 21:14, ']
@@ -169,10 +170,26 @@ describe 'Pericope', ->
           'Matthew 12:13':                  ['mt 12:13. ']
           'Luke 2':                         ['Luke 2---Maris ']
           'Luke 3:1':                       ['Luke 3\"1---Aliquam ']
-          'Acts 13:4-20':                   ['(Acts 13:4-20)']
+          'Acts 13:4–20':                   ['(Acts 13:4-20)']
 
         for wellFormattedPericope, pericopes of tests
           for pericope in pericopes
             result = Pericope.parse(pericope).toString()
             assert.equal wellFormattedPericope, result,
               "Expected Pericope to parse \"#{pericope}\" and present it as \"#{wellFormattedPericope}\"; but got: \"#{result}\""
+
+      it 'should accept verseRangeSeparator', ->
+        assert.equal Pericope.parse('john 1:1-7').toString(verseRangeSeparator: '_'), 'John 1:1_7'
+
+      it 'should accept chapterRangeSeparator', ->
+        assert.equal Pericope.parse('john 1-3').toString(chapterRangeSeparator: '_'), 'John 1_3'
+
+      it 'should accept verseListSeparator', ->
+        assert.equal Pericope.parse('john 1:1,7').toString(verseListSeparator: '_'), 'John 1:1_7'
+
+      it 'should accept chapterListSeparator', ->
+        assert.equal Pericope.parse('john 1:1, 3:1').toString(chapterListSeparator: '_'), 'John 1:1_3:1'
+
+      it 'should accept alwaysPrintVerseRange', ->
+        assert.equal Pericope.parse('john 1').toString(alwaysPrintVerseRange: false), 'John 1'
+        assert.equal Pericope.parse('john 1').toString(alwaysPrintVerseRange:  true), 'John 1:1–51'

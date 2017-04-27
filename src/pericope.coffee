@@ -18,22 +18,36 @@ class Pericope
 
 
 
-  toString: ->
-    "#{@bookName} #{@wellFormattedReference()}"
+  toString: (options={})->
+    "#{@bookName} #{@wellFormattedReference(options)}"
 
-  wellFormattedReference: ->
+  wellFormattedReference: (options={})->
     recentChapter = null # e.g. in 12:1-8, remember that 12 is the chapter when we parse the 8
     recentChapter = 1 unless Pericope.hasChapters(@book)
-    strings = for range in @ranges
+
+    verseRangeSeparator = options.verseRangeSeparator ? "–" # en-dash
+    chapterRangeSeparator = options.chapterRangeSeparator ? "—" # em-dash
+    verseListSeparator = options.verseListSeparator ? ", "
+    chapterListSeparator = options.chapterListSeparator ? "; "
+    alwaysPrintVerseRange = options.alwaysPrintVerseRange ? false
+
+    s = ""
+    for i in [0...@ranges.length]
+      range = @ranges[i]
       minChapter = Pericope.getChapter(range.low)
       minVerse = Pericope.getVerse(range.low)
       maxChapter = Pericope.getChapter(range.high)
       maxVerse = Pericope.getVerse(range.high)
-      s = ""
 
-      if minVerse == 1 and maxVerse >= Pericope.lastVerseOf(@book, maxChapter)
+      if i > 0
+        if recentChapter == minChapter
+          s += verseListSeparator
+        else
+          s += chapterListSeparator
+
+      if minVerse == 1 and maxVerse >= Pericope.lastVerseOf(@book, maxChapter) and !alwaysPrintVerseRange
         s += minChapter
-        s += "-#{maxChapter}" if maxChapter > minChapter
+        s += "#{chapterRangeSeparator}#{maxChapter}" if maxChapter > minChapter
       else
         if recentChapter == minChapter
           s += minVerse
@@ -42,16 +56,12 @@ class Pericope
           s += "#{minChapter}:#{minVerse}"
 
         if range.size() > 1
-
-          s += "-"
           if minChapter == maxChapter
-            s += maxVerse
+            s += "#{verseRangeSeparator}#{maxVerse}"
           else
             recentChapter = maxChapter
-            s += "#{maxChapter}:#{maxVerse}"
-
-      s
-    strings.join ', '
+            s += "#{chapterRangeSeparator}#{maxChapter}:#{maxVerse}"
+    s
 
 
 
