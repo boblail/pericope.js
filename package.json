@@ -1,7 +1,7 @@
 {
   "name":                 "pericope",
   "author":               "Bob Lail <bob.lailfamily@gmail.com>",
-  "version":              "0.6.6",
+  "version":              "0.6.7",
   "main":                 "lib/pericope",
   "dependencies": {},
   "devDependencies": {
