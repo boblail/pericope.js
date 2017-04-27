@@ -1,5 +1,5 @@
 assert = require('chai').assert
-Pericope = require('../lib/pericope').Pericope
+Pericope = require('../src/pericope').Pericope
 
 refute = (expression, message)-> assert(!expression, message)
 r = range = (low, high)-> new Pericope.Range(low, high)
@@ -138,6 +138,10 @@ describe 'Pericope', ->
     describe 'parse', ->
       it 'should work', ->
         pericope = Pericope.parse('ps 1:1-8')
+        assert.equal 'Psalm', pericope.bookName, "Expected Pericope to read \"ps\" as \"Psalm\""
+
+      it 'should work when there is no space between the book name and reference', ->
+        pericope = Pericope.parse('ps1')
         assert.equal 'Psalm', pericope.bookName, "Expected Pericope to read \"ps\" as \"Psalm\""
 
       it 'should not work', ->
