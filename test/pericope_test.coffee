@@ -1,5 +1,5 @@
 assert = require('chai').assert
-Pericope = require('../src/pericope').Pericope
+Pericope = require('../src/pericope')
 
 refute = (expression, message)-> assert(!expression, message)
 r = range = (low, high)-> new Pericope.Range(low, high)

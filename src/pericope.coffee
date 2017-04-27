@@ -257,4 +257,4 @@ class Pericope
 
 
 
-module.exports.Pericope = Pericope
+module.exports = Pericope
