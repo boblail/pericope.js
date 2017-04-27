@@ -2,25 +2,25 @@ class Pericope
   class @Range
     constructor: (@low, @high)->
     size: -> (@high - @low) + 1
-  
-  
-  
+
+
+
   @parse: (text)->
     {originalString, book, ranges} = Pericope.matchOne(text) ? {}
     return null unless book and ranges
-    
+
     pericope = new Pericope(book, ranges)
     pericope.originalString = originalString
     pericope
-  
+
   constructor: (@book, @ranges)->
     @bookName = Pericope.BOOK_NAMES[@book]
-  
-  
-  
+
+
+
   toString: ->
     "#{@bookName} #{@wellFormattedReference()}"
-  
+
   wellFormattedReference: ->
     recentChapter = null # e.g. in 12:1-8, remember that 12 is the chapter when we parse the 8
     recentChapter = 1 unless Pericope.hasChapters(@book)
@@ -30,7 +30,7 @@ class Pericope
       maxChapter = Pericope.getChapter(range.high)
       maxVerse = Pericope.getVerse(range.high)
       s = ""
-      
+
       if minVerse == 1 and maxVerse >= Pericope.lastVerseOf(@book, maxChapter)
         s += minChapter
         s += "-#{maxChapter}" if maxChapter > minChapter
@@ -40,28 +40,28 @@ class Pericope
         else
           recentChapter = minChapter
           s += "#{minChapter}:#{minVerse}"
-        
+
         if range.size() > 1
-          
+
           s += "-"
           if minChapter == maxChapter
             s += maxVerse
           else
             recentChapter = maxChapter
             s += "#{maxChapter}:#{maxVerse}"
-      
+
       s
     strings.join ', '
-  
-  
-  
+
+
+
   @matchOne: (text)->
     @matchAll(text)[0]
-  
+
   @matchAll: (text, callback)->
     results = []
     callback ?= (attributes)-> results.push(attributes)
-    
+
     @PERICOPE_PATTERN.lastIndex = 0
     while match = @PERICOPE_PATTERN.exec(text)
       book = @recognizeBook(match[1])
@@ -71,24 +71,24 @@ class Pericope
           originalString: match[0]
           book: book
           ranges: ranges
-    
+
     results
-  
+
   @recognizeBook: (string)->
     string = string.toString().toLowerCase()
     for [book, matcher] in @BOOK_MATCHERS
       return book if matcher.test(string)
     null
-  
+
   @parseReference: (book, reference)->
     ranges = @normalizeReference(reference).split /[,;]/
     @parseRanges(book, ranges)
-  
+
   @normalizeReference: (reference)->
     for [regex, replacement] in @REFERENCE_NORMALIZATIONS
       reference = reference.replace(regex, replacement)
     reference
-  
+
   @parseRanges: (book, ranges)->
     recentChapter = null # e.g. in 12:1-8, remember that 12 is the chapter when we parse the 8
     recentChapter = 1 unless @hasChapters(book)
@@ -97,14 +97,14 @@ class Pericope
       range.push range[0] if range.length < 2 # treat 12:4 as 12:4-12:4
       lowerChapterAndVerse = (+d for d in range[0].split(':')) # parse "3:28" to [3,28]
       upperChapterAndVerse = (+d for d in range[1].split(':')) # parse "3:28" to [3,28]
-      
+
       # treat Mark 3-1 as Mark 3-3 and, eventually, Mark 3:1-35
       if lowerChapterAndVerse.length == 1 and
          upperChapterAndVerse.length == 1 and
          upperChapterAndVerse[0] < lowerChapterAndVerse[0]
         upperChapterAndVerse = lowerChapterAndVerse.slice() # clone lowerChapterAndVerse
-      
-      
+
+
       # Make sure the low end of the range and the high end of the range
       # are composed of arrays with two appropriate values: [chapter, verse]
       chapterRange = false
@@ -118,8 +118,8 @@ class Pericope
       else
         lowerChapterAndVerse[0] = @toValidChapter(book, lowerChapterAndVerse[0])
       lowerChapterAndVerse[1] = @toValidVerse(book, lowerChapterAndVerse...)
-      
-      
+
+
       if upperChapterAndVerse.length < 2
         if chapterRange
           upperChapterAndVerse[0] = @toValidChapter(book, upperChapterAndVerse[0])
@@ -129,14 +129,14 @@ class Pericope
       else
         upperChapterAndVerse[0] = @toValidChapter(book, upperChapterAndVerse[0])
       upperChapterAndVerse[1] = @toValidVerse(book, upperChapterAndVerse...)
-      
-      
+
+
       recentChapter = upperChapterAndVerse[0] # remember the last chapter
-      
+
       new @Range(@getId(book, lowerChapterAndVerse...), @getId(book, upperChapterAndVerse...))
-  
-  
-  
+
+
+
   @toValidBook = (book)-> @coerceToRange(book, new @Range(1, 66))
   @toValidChapter = (book, chapter)-> @coerceToRange(chapter, new @Range(1, @lastChapterOf(book)))
   @toValidVerse = (book, chapter, verse)-> @coerceToRange(verse, new @Range(1, @lastVerseOf(book, chapter)))
@@ -149,12 +149,12 @@ class Pericope
     value = range.low if value < range.low
     value = range.high if value > range.high
     value
-  
-  
-  
+
+
+
   # These regular expressions do not match
   # every single valid pericope, but they quickly
-  # match things that look like pericopes in 
+  # match things that look like pericopes in
   # a wall of text and allow this class to narrow
   # its focus.
   #
@@ -236,11 +236,11 @@ class Pericope
     [/[–—]/g,           '-'],     # convert em dash and en dash to -
     [/[^0-9,:;\-–—]/g,  '']       # remove everything but [0-9,;:-]
   ]
-  
+
   @lastChapterOf = (book)-> @CHAPTERS_PER_BOOK[book]
   @lastVerseOf = (book, chapter)-> @VERSES_PER_CHAPTER[book][chapter]
   @hasChapters = (book)-> @lastChapterOf(book) > 1
-  
+
   @getBook: (id)-> Math.round id / 1000000 # the book is everything left of the least significant 6 digits
   @getChapter: (id)-> Math.round (id % 1000000) / 1000 # the chapter is the 3rd through 6th most significant digits
   @getVerse: (id)-> id % 1000 # the verse is the 3 least significant digits

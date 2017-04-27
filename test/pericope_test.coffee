@@ -40,26 +40,26 @@ describe 'Pericope', ->
 
 
   describe 'knows various boundaries in the Bible', ->
-    
+
     describe 'lastChapterOf', ->
       it 'should return the last chapter in the given book', ->
         tests = [
           [ 1,  50],         # Genesis has 50 chapters
           [19, 150],         # Psalms has 150 chapters
           [66,  22] ]        # Revelation has 22 chapters
-        
+
         for [book, chapters] in tests
           assert.equal chapters, Pericope.lastChapterOf(book), "Expected Pericope to know the number of chapters in #{Pericope.BOOK_NAMES[book]}"
-    
+
     describe 'lastVerseOf', ->
       it 'should return the last verse in a given chapter', ->
         tests = [
           [ 1,   9,  29],    # Genesis 9 has 29 verses
           [ 1,  50,  26] ]   # Genesis 50 has 26 verses
-        
+
         for [book, chapter, verses] in tests
           assert.equal verses, Pericope.lastVerseOf(book, chapter), "Expected Pericope to know the number of verses in #{Pericope.BOOK_NAMES[book]} #{chapter}"
-    
+
     describe 'hasChapters', ->
       it 'should correctly identify books that don\'t have chapters', ->
         assert Pericope.hasChapters(1),  "Genesis has chapters"
@@ -77,14 +77,14 @@ describe 'Pericope', ->
           'mark':     41 # Mark
           'ps':       19 # Psalms
           'jas':      59 # James
-        
+
         for input, expectedBook of tests
           assert.equal expectedBook, Pericope.recognizeBook(input), "Expected Pericope to be able to identify \"#{input}\" as book ##{expectedBook}"
 
       it 'should return null for things that aren\'t books of the Bible', ->
         tests =
           'hezekiah'
-        
+
         for input of tests
           assert.isNull Pericope.recognizeBook(input), "Expected Pericope to know that \"#{input}\" is not a book of the Bible"
 
@@ -96,19 +96,19 @@ describe 'Pericope', ->
         tests = [
           [60, "1:1",         [r(60001001,60001001)]],                          # 1 Peter 1:1
           [19, "1-8",         [r(19001001,19008009)]],                          # Psalm 1-8
-          [1,  "1",           [r(1001001,1001031)]],                            # Genesis 1 
+          [1,  "1",           [r(1001001,1001031)]],                            # Genesis 1
           [43, "12:1–13:8",   [r(43012001,43013008)]],                          # John 12:1–13:8
           [45, "6:1,4-8",     [r(45006001,45006001), r(45006004,45006008)]]     # Romans 6:1,4-8
         ]
         for [book, reference, expectedRanges] in tests
           assert.deepEqual expectedRanges, Pericope.parseReference(book, reference), "Expected Pericope to be able to parse \"#{reference}\"..."
-      
+
       it 'should ignore "a" and "b"', ->
         assert.deepEqual [r(39002006,39002009)], Pericope.parseReference(39, "2:6a-9b")
-      
+
       it 'should work correctly on books with no chapters', ->
         assert.deepEqual [r(65001008,65001010)], Pericope.parseReference(65, "8–10")
-      
+
       it 'should work with different punctuation, errors for range separators', ->
         expectedResults = [
           r(40003001, 40003001),
@@ -118,16 +118,16 @@ describe 'Pericope', ->
           r(40004019, 40004019) ]
         assert.deepEqual expectedResults, Pericope.parseReference(40, "3:1,3,4-5,7,4:19")
         assert.deepEqual expectedResults, Pericope.parseReference(40, "3:1, 3, 4-5, 7; 4:19")
-      
+
       it 'should forgive various punctuation errors for chapter/verse pairing', ->
         tests = ["1:4-9", "1\"4-9", "1.4-9", "1 :4-9", "1: 4-9"]
         for test in tests
           assert.deepEqual [r(28001004, 28001009)], Pericope.parseReference(28, test)
-      
+
       it 'should coerce verses to the right range', ->
         assert.deepEqual [r(41001045, 41001045)], Pericope.parseReference(41, "1:452")
         assert.deepEqual [r(41001001, 41001001)], Pericope.parseReference(41, "1:0")
-      
+
       it 'should coerce chapters to the right range', ->
         assert.deepEqual [r(43021001, 43021001)], Pericope.parseReference(43, "28:1")
         assert.deepEqual [r(43001001, 43001001)], Pericope.parseReference(43, "0:1")
@@ -165,7 +165,7 @@ describe 'Pericope', ->
           'Luke 2':                         ['Luke 2---Maris ']
           'Luke 3:1':                       ['Luke 3\"1---Aliquam ']
           'Acts 13:4-20':                   ['(Acts 13:4-20)']
-        
+
         for wellFormattedPericope, pericopes of tests
           for pericope in pericopes
             result = Pericope.parse(pericope).toString()
