@@ -5,11 +5,9 @@ refute = (expression, message)-> assert(!expression, message)
 r = range = (low, high)-> new Pericope.Range(low, high)
 
 describe 'Pericope', ->
-  describe 'has the ability to quickly recognize things that look vaguely like pericopes:', ->
-
-
+  describe 'has the ability to quickly recognize Bible references:', ->
     describe 'BOOK_PATTERN', ->
-      it 'should match valid books', ->
+      it 'should match valid books (including by abbreviations and common misspellings)', ->
         tests =
           'ii samuel':      'ii samuel'
           '1 cor.':         '1 cor'
@@ -23,17 +21,15 @@ describe 'Pericope', ->
           assert Pericope.BOOK_PATTERN.test(test), "Expected Pericope to recognize \"#{test}\" as a potential book"
           assert.equal test.match(Pericope.BOOK_PATTERN)[0], expectedMatch
 
-
     describe 'PERICOPE_PATTERN', ->
-
       it 'should match things that look like pericopes', ->
-        tests = [ 'Romans 3:9', 'cross 1' ]
+        tests = [ 'Romans 3:9' ]
         for test in tests
           Pericope.PERICOPE_PATTERN.lastIndex = 0
           assert Pericope.PERICOPE_PATTERN.test(test), "Expected Pericope to recognize \"#{test}\" as a potential pericope"
 
       it 'should not match things that do not look like pericopes', ->
-        tests = [ 'Cross, 1' ]
+        tests = [ 'Cross 1', 'Hezekiah 4:3' ]
         for test in tests
           Pericope.PERICOPE_PATTERN.lastIndex = 0
           refute Pericope.PERICOPE_PATTERN.test(test), "Expected Pericope to recognize that \"#{test}\" is not a potential pericope"
@@ -41,12 +37,12 @@ describe 'Pericope', ->
 
 
   describe 'knows various boundaries in the Bible', ->
-
     describe 'lastChapterOf', ->
       it 'should return the last chapter in the given book', ->
         tests = [
           [ 1,  50],         # Genesis has 50 chapters
           [19, 150],         # Psalms has 150 chapters
+          [65,   1],         # Jude has only 1 chapter
           [66,  22] ]        # Revelation has 22 chapters
 
         for [book, chapters] in tests
@@ -70,24 +66,16 @@ describe 'Pericope', ->
 
 
 
-  describe 'can identify books of the Bible by all kinds of abbreviations or misspellings', ->
-    describe 'recognizeBook', ->
-      it 'should return the integer identifying the book of the Bible', ->
-        tests =
-          'Romans':   45 # Romans
-          'mark':     41 # Mark
-          'ps':       19 # Psalms
-          'jas':      59 # James
+  describe 'can identify books of the Bible', ->
+    it 'should return the integer identifying the book of the Bible', ->
+      tests =
+        'Romans':   45 # Romans
+        'mark':     41 # Mark
+        'ps':       19 # Psalms
+        'jas':      59 # James
 
-        for input, expectedBook of tests
-          assert.equal expectedBook, Pericope.recognizeBook(input), "Expected Pericope to be able to identify \"#{input}\" as book ##{expectedBook}"
-
-      it 'should return null for things that aren\'t books of the Bible', ->
-        tests =
-          'hezekiah'
-
-        for input of tests
-          assert.isNull Pericope.recognizeBook(input), "Expected Pericope to know that \"#{input}\" is not a book of the Bible"
+      for input, expectedBook of tests
+        assert.equal expectedBook, Pericope.parse("#{input} 1").book, "Expected Pericope to be able to identify \"#{input}\" as book ##{expectedBook}"
 
 
 
@@ -145,7 +133,7 @@ describe 'Pericope', ->
         pericope = Pericope.parse('ps1')
         assert.equal 'Psalm', pericope.bookName, "Expected Pericope to read \"ps\" as \"Psalm\""
 
-      it 'should not work', ->
+      it 'should return null for invalid references', ->
         assert.isNull Pericope.parse('nope'), "Expected Pericope to return null"
 
 
