@@ -1,22 +1,26 @@
 {
-  "name":                 "pericope",
-  "description":          "A simple Bible reference parser",
-  "author":               "Bob Lail <bob.lailfamily@gmail.com>",
-  "repository":           "https://github.com/boblail/pericope.js",
-  "version":              "0.6.7",
-  "license":              "MIT",
-  "main":                 "lib/pericope",
+  "name": "pericope",
+  "description": "A simple Bible reference parser",
+  "author": "Bob Lail <bob.lailfamily@gmail.com>",
+  "repository": "https://github.com/boblail/pericope.js",
+  "version": "0.6.7",
+  "license": "MIT",
+  "main": "lib/pericope",
   "dependencies": {},
   "devDependencies": {
-    "coffee-script":      "~1.6.3",
-    "mocha":              "~1.18.2",
-    "chai":               "~1.9.0"
+    "babel": "^6.23.0",
+    "babel-cli": "^6.11.4",
+    "babel-core": "^6.13.2",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "~3.5.0",
+    "coffee-script": "~1.12.5",
+    "mocha": "~3.3.0"
   },
   "engines": {
-    "node":               ">=0.8.0"
+    "node": ">=0.8.0"
   },
   "scripts": {
-    "build":              "coffee --bare --compile --output lib src/*.coffee",
-    "test":               "mocha --reporter spec --compilers coffee:coffee-script"
+    "build": "coffee --bare --compile --output tmp src/*.coffee && babel tmp -d lib",
+    "test": "mocha --reporter spec --compilers coffee:./coffee-babel"
   }
 }
