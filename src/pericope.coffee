@@ -188,4 +188,4 @@ class Pericope
 
 
 
-export default Pericope
+module.exports = Pericope
